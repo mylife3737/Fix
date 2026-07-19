@@ -1,0 +1,106 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://fixitfirstbyruben.com/handyman-vs-angi-port-charlotte/#webpage",
+      "name": "Fix It First vs. Angi Handymen — Port Charlotte, FL (2026)",
+      "description": "Skip the middleman. Fix It First by Ruben is a direct-hire local handyman in Charlotte County, FL. See why homeowners choose us over Angi, TaskRabbit & Thumbtack.",
+      "url": "https://fixitfirstbyruben.com/handyman-vs-angi-port-charlotte/",
+      "dateModified": "2026-07-14",
+      "inLanguage": "en-US",
+      "isPartOf": { "@id": "https://fixitfirstbyruben.com/#website" },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://fixitfirstbyruben.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Local vs. Platform Handymen in Port Charlotte",
+            "item": "https://fixitfirstbyruben.com/handyman-vs-angi-port-charlotte/"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "ItemList",
+      "name": "Handyman Services Comparison — Charlotte County FL",
+      "description": "Comparison of local handyman Fix It First by Ruben vs. Angi, TaskRabbit, and Thumbtack for homeowners in Port Charlotte and Charlotte County, FL.",
+      "numberOfItems": 4,
+      "itemListOrder": "https://schema.org/ItemListOrderAscending",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Fix It First by Ruben",
+          "url": "https://fixitfirstbyruben.com/",
+          "description": "Direct-hire local handyman in Charlotte County, FL. No platform fees, no middleman. Call (941) 661-9500 for a free estimate."
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Angi",
+          "url": "https://www.angi.com/",
+          "description": "National contractor referral platform. Best for licensed work and larger projects with multiple quotes."
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "TaskRabbit",
+          "url": "https://www.taskrabbit.com/",
+          "description": "On-demand tasker marketplace. Adds a 15% service fee at checkout."
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Thumbtack",
+          "url": "https://www.thumbtack.com/",
+          "description": "Local pro marketplace. Availability and pricing vary by area."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does Fix It First charge a service fee like Angi or TaskRabbit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Fix It First by Ruben has no platform fees, no service charges, and no app markup. You pay only for the work performed. Contact Ruben directly at (941) 661-9500 for a free estimate."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Angi have handymen available in Port Charlotte, FL?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Angi does list pros in the Port Charlotte area, but coverage can be inconsistent for small jobs. Local handymen on Angi still pass platform fees into their quotes. Fix It First is based in Charlotte County and focuses specifically on the local area."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is TaskRabbit available in Charlotte County, FL?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "TaskRabbit availability in Charlotte County, FL is limited compared to larger metro areas. The platform also adds a 15% service fee to all bookings. For local small repairs, a direct-hire handyman like Fix It First is typically faster and less expensive."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What handyman jobs does Fix It First handle that platforms often skip?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Fix It First specializes in small jobs that platform handymen often pass on: drywall patching, screen repair, cabinet adjustments, furniture assembly, TV mounting, gutter cleaning, painting touch-ups, and fixture swaps. No job too small."
+          }
+        }
+      ]
+    }
+  ]
+}

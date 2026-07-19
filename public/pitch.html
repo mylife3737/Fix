@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fix It First by Ruben — Client Proposal</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:   #09090b;
+  --bg2:  #18181b;
+  --bd:   #27272a;
+  --red:  #dc2626;
+  --red2: #ef4444;
+  --wh:   #ffffff;
+  --g1:   #a1a1aa;
+  --g2:   #71717a;
+  --g3:   #52525b;
+}
+
+body {
+  background: var(--bg);
+  color: var(--wh);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  cursor: default;
+  user-select: none;
+}
+
+/* ── SLIDE ENGINE ──────────────────────────────────── */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 72px;
+  opacity: 0;
+  transform: translateX(48px);
+  transition: opacity .55s ease, transform .55s ease;
+  pointer-events: none;
+}
+.slide.active  { opacity: 1; transform: translateX(0); pointer-events: all; }
+.slide.exiting { opacity: 0; transform: translateX(-48px); }
+
+/* staggered enter */
+.slide.active .lbl   { animation: up .45s .10s both; }
+.slide.active .h1    { animation: up .45s .18s both; }
+.slide.active .sub   { animation: up .45s .26s both; }
+.slide.active .body  { animation: up .45s .26s both; }
+
+@keyframes up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CHROME ────────────────────────────────────────── */
+#brand {
+  position: fixed; top: 22px; left: 28px;
+  font-size: 10px; font-weight: 700; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--g3); font-family: monospace;
+  z-index: 200;
+}
+#brand b { color: var(--red2); }
+
+#bar {
+  position: fixed; bottom: 0; left: 0; height: 3px;
+  background: var(--red); z-index: 200;
+}
+
+#dots {
+  position: fixed; bottom: 22px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 200;
+}
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--bd); cursor: pointer;
+  transition: background .3s;
+}
+.dot.on { background: var(--red2); }
+
+#ctr {
+  position: fixed; bottom: 18px; right: 28px;
+  font-size: 10px; color: var(--g3); letter-spacing: .2em; font-family: monospace;
+  z-index: 200;
+}
+
+/* ── TYPOGRAPHY ────────────────────────────────────── */
+.lbl {
+  font-size: 10px; font-weight: 700; letter-spacing: .32em;
+  text-transform: uppercase; color: var(--red2); margin-bottom: 18px;
+}
+.h1 {
+  font-size: 52px; font-weight: 900; line-height: 1.07;
+  text-align: center; margin-bottom: 22px;
+}
+.h1 .r { color: var(--red2); }
+.sub {
+  font-size: 19px; color: var(--g1); text-align: center;
+  max-width: 660px; line-height: 1.65;
+}
+.sub b { color: var(--wh); }
+
+/* ── CARDS 3-col ───────────────────────────────────── */
+.cards {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 18px; width: 100%; max-width: 920px; margin-top: 36px;
+}
+.card {
+  background: var(--bg2); border: 1px solid var(--bd);
+  padding: 26px 22px; display: flex; flex-direction: column; gap: 9px;
+}
+.card-ico  { font-size: 26px; }
+.card-ttl  { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.card-body { font-size: 12px; color: var(--g1); line-height: 1.6; }
+
+/* ── SEARCH PILLS ──────────────────────────────────── */
+.pills {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; margin-top: 30px; max-width: 760px;
+}
+.pill {
+  background: var(--bg2); border: 1px solid var(--bd);
+  padding: 9px 16px; font-size: 12px; color: var(--g1); font-family: monospace;
+}
+
+/* ── STEPS ─────────────────────────────────────────── */
+.steps {
+  display: flex; flex-direction: column; gap: 14px;
+  width: 100%; max-width: 720px; margin-top: 28px;
+}
+.step {
+  display: flex; gap: 20px; align-items: flex-start;
+  background: var(--bg2); border: 1px solid var(--bd); padding: 18px 22px;
+}
+.step-n { font-size: 22px; font-weight: 900; color: var(--red); font-family: monospace; min-width: 30px; }
+.step-t { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.step-d { font-size: 11px; color: var(--g1); line-height: 1.55; }
+
+/* ── TWO COL ───────────────────────────────────────── */
+.two-col {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 36px; width: 100%; max-width: 900px; margin-top: 28px;
+}
+.col-lbl {
+  font-size: 10px; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--g3); margin-bottom: 14px;
+}
+.li {
+  display: flex; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--bd); font-size: 13px; color: var(--g1);
+}
+.li:last-child { border: none; }
+.ck { color: #22c55e; }
+.cx { color: var(--red2); }
+
+/* ── COMPETITOR CARDS ──────────────────────────────── */
+.comp-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 18px; width: 100%; max-width: 940px; margin-top: 24px; align-items: start;
+}
+.comp-card {
+  background: var(--bg2); border: 1px solid var(--bd);
+  padding: 22px 20px; display: flex; flex-direction: column;
+}
+.comp-card.hero { border-color: var(--red); }
+.comp-name {
+  font-size: 13px; font-weight: 800; color: var(--wh);
+  margin-bottom: 14px; line-height: 1.45;
+}
+.comp-name small { display: block; font-size: 10px; font-weight: 500; color: var(--g3); margin-top: 2px; letter-spacing: .04em; }
+.comp-row {
+  font-size: 12px; color: var(--g1); padding: 9px 0;
+  border-bottom: 1px solid var(--bd); display: flex; gap: 10px; align-items: center;
+}
+.comp-row:last-of-type { border-bottom: none; }
+.comp-foot {
+  font-size: 10px; color: var(--g3); letter-spacing: .1em;
+  text-transform: uppercase; margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid var(--bd);
+}
+.comp-card.hero .comp-foot { color: var(--red2); }
+
+/* ── STATS ─────────────────────────────────────────── */
+.stats { display: flex; gap: 48px; margin-top: 36px; }
+.stat-n { font-size: 56px; font-weight: 900; color: var(--red2); line-height: 1; text-align: center; }
+.stat-l { font-size: 10px; color: var(--g2); letter-spacing: .15em; text-transform: uppercase; margin-top: 8px; text-align: center; }
+
+/* ── BROWSER MOCKUP ────────────────────────────────── */
+.browser {
+  width: 100%; max-width: 800px; background: var(--bg2);
+  border: 1px solid var(--bd); margin-top: 24px; overflow: hidden;
+}
+.b-bar {
+  background: #111113; padding: 9px 14px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--bd);
+}
+.b-dots { display: flex; gap: 6px; }
+.bd { width: 10px; height: 10px; border-radius: 50%; }
+.bd.r { background: #ff5f57; }
+.bd.y { background: #febc2e; }
+.bd.g { background: #28c840; }
+.b-url {
+  background: #1c1c1e; border: 1px solid var(--bd);
+  padding: 4px 12px; font-size: 11px; color: var(--g2); font-family: monospace; flex: 1;
+}
+.b-body { height: 300px; overflow: hidden; position: relative; background: #09090b; }
+.b-body iframe {
+  width: 150%; height: 150%; border: none;
+  transform: scale(.667); transform-origin: top left; pointer-events: none;
+}
+
+/* ── CTA SLIDE ─────────────────────────────────────── */
+.cta-box {
+  background: var(--red); padding: 52px 68px; text-align: center; max-width: 700px;
+}
+.cta-h { font-size: 44px; font-weight: 900; margin-bottom: 14px; }
+.cta-s { font-size: 17px; opacity: .88; margin-bottom: 32px; line-height: 1.6; }
+.cta-c { font-size: 13px; opacity: .72; letter-spacing: .12em; font-family: monospace; }
+</style>
+</head>
+<body>
+
+<div id="brand"><b>Fix It First</b> &nbsp;·&nbsp; Client Proposal</div>
+<div id="bar"></div>
+<div id="dots"></div>
+<div id="ctr"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+═══════════════════════════════════════════════════════ -->
+<div class="slide active">
+  <div class="lbl">Prepared for Ruben &nbsp;·&nbsp; Fix It First</div>
+  <div class="h1">Your website.<br><span class="r">Built to get you calls.</span></div>
+  <div class="sub">
+    A professional web presence for <b>Fix It First by Ruben</b> —
+    designed to rank in Charlotte County and turn local searches into phone calls.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 2 — THE OPPORTUNITY
+═══════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="lbl">The Opportunity</div>
+  <div class="h1" style="font-size:42px">Homeowners in Charlotte County<br>search for a handyman <span class="r">every day.</span></div>
+  <div class="pills body">
+    <div class="pill">"handyman Port Charlotte FL"</div>
+    <div class="pill">"screen repair Port Charlotte"</div>
+    <div class="pill">"drywall repair Port Charlotte FL"</div>
+    <div class="pill">"handyman Punta Gorda FL"</div>
+    <div class="pill">"gutter cleaning Charlotte County"</div>
+    <div class="pill">"pressure washing Port Charlotte"</div>
+    <div class="pill">"furniture assembly Port Charlotte"</div>
+    <div class="pill">"handyman near me"</div>
+  </div>
+  <div class="sub body" style="margin-top:28px;font-size:16px">
+    Without a website and Google presence, <b>none of those searches find you.</b>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 3 — WHAT WE BUILT
+═══════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="lbl">What We Built</div>
+  <div class="h1" style="font-size:42px">A complete web presence —<br><span class="r">ready to launch.</span></div>
+  <div class="cards body">
+    <div class="card">
+      <div class="card-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="#ef4444"/></svg></div>
+      <div class="card-ttl">Mobile-First Design</div>
+      <div class="card-body">Looks great on phones — where 70%+ of local searches happen.</div>
+    </div>
+    <div class="card">
+      <div class="card-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <div class="card-ttl">SEO-Ready</div>
+      <div class="card-body">Local keywords and Charlotte County geography baked in from day one.</div>
+    </div>
+    <div class="card">
+      <div class="card-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
+      <div class="card-ttl">Estimate Form</div>
+      <div class="card-body">Customers pick a service and submit a request directly — no phone tag.</div>
+    </div>
+    <div class="card">
+      <div class="card-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="card-ttl">Review System</div>
+      <div class="card-body">Collect and display reviews right on the site as your reputation grows.</div>
+    </div>
+    <div class="card">
+      <div class="card-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="#ef4444"/><circle cx="3" cy="12" r="1" fill="#ef4444"/><circle cx="3" cy="18" r="1" fill="#ef4444"/></svg></div>
+      <div class="card-ttl">13 Services Listed</div>
+      <div class="card-body">Every service named and described — exactly how customers search for them.</div>
+    </div>
+    <div class="card">
+      <div class="card-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div class="card-ttl">Built for Charlotte County</div>
+      <div class="card-body">Port Charlotte, Punta Gorda, Deep Creek, South Gulf Cove — all wired into the site.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 4 — SITE PREVIEW
+═══════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="lbl">The Site</div>
+  <div class="h1" style="font-size:36px;margin-bottom:14px">fixitfirstbyruben.com</div>
+  <div class="browser body">
+    <div class="b-bar">
+      <div class="b-dots">
+        <div class="bd r"></div><div class="bd y"></div><div class="bd g"></div>
+      </div>
+      <div class="b-url">fixitfirstbyruben.com</div>
+    </div>
+    <div class="b-body">
+      <iframe src="https://fixitfirst.surge.sh/" scrolling="no" title="Fix It First preview"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 5 — YOUR ADVANTAGE
+═══════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="lbl">Your Positioning</div>
+  <div class="h1" style="font-size:42px">The franchises charge more.<br><span class="r">You charge fair.</span></div>
+  <div class="two-col body">
+    <div>
+      <div class="col-lbl">Franchise competitors</div>
+      <div class="li"><span class="cx">✗</span> Corporate overhead in every quote</div>
+      <div class="li"><span class="cx">✗</span> You never know who shows up</div>
+      <div class="li"><span class="cx">✗</span> Upsell pressure on every visit</div>
+      <div class="li"><span class="cx">✗</span> Minimum job sizes, trip fees</div>
+    </div>
+    <div>
+      <div class="col-lbl">Fix It First by Ruben</div>
+      <div class="li"><span class="ck">✓</span> Honest pricing, no middlemen</div>
+      <div class="li"><span class="ck">✓</span> You know exactly who's coming</div>
+      <div class="li"><span class="ck">✓</span> No job too small</div>
+      <div class="li"><span class="ck">✓</span> Cash, Venmo, Zelle — easy payment</div>
+      <div class="li"><span class="ck">✓</span> General liability coverage</div>
+    </div>
+  </div>
+  <div class="sub body" style="margin-top:24px;font-size:15px">
+    That positioning wins — <b>if customers can find you.</b>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 6 — COMPETITOR COMPARISON
+═══════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="lbl">Competitive Landscape</div>
+  <div class="h1" style="font-size:38px">Where you stand <span class="r">vs. the market</span></div>
+  <div class="comp-grid body">
+
+    <div class="comp-card hero">
+      <div class="comp-name">Fix It First by Ruben<small>Your business</small></div>
+      <div class="comp-row"><span class="ck">✓</span> Professional website</div>
+      <div class="comp-row"><span class="ck">✓</span> Online estimate form</div>
+      <div class="comp-row"><span class="ck">✓</span> Honest pricing — no middleman</div>
+      <div class="comp-row" style="color:#f59e0b">→ Google listing — coming next</div>
+      <div class="comp-foot">Already ahead on the site.</div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-name" style="color:var(--g1)">Handyman Connection<small>Mr. Handyman · Franchise brands</small></div>
+      <div class="comp-row"><span class="ck">✓</span> Website (corporate template)</div>
+      <div class="comp-row"><span class="cx">✗</span> No online booking form</div>
+      <div class="comp-row"><span class="cx">✗</span> Corporate pricing, upsell pressure</div>
+      <div class="comp-row"><span class="ck">✓</span> 80–150 Google reviews</div>
+      <div class="comp-foot">Big name. Impersonal service.</div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-name" style="color:var(--g1)">Local Independents<small>Other solo handymen in Charlotte County</small></div>
+      <div class="comp-row" style="color:var(--g2)">~ Website (basic or none)</div>
+      <div class="comp-row"><span class="cx">✗</span> No estimate form</div>
+      <div class="comp-row" style="color:var(--g2)">~ Pricing varies, rarely stated</div>
+      <div class="comp-row" style="color:var(--g2)">~ 20–60 Google reviews</div>
+      <div class="comp-foot">Weak online presence.</div>
+    </div>
+
+  </div>
+  <div class="sub body" style="margin-top:20px;font-size:15px">
+    You're already ahead on the website. <b>One Google listing away from competing with anyone.</b>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 7 — LAUNCH PLAN
+═══════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="lbl">The Launch Plan</div>
+  <div class="h1" style="font-size:40px">5 steps to start <span class="r">getting found</span></div>
+  <div class="steps body">
+    <div class="step">
+      <div class="step-n">01</div>
+      <div>
+        <div class="step-t">Get your domain live</div>
+        <div class="step-d">Register fixitfirstbyruben.com — your permanent home on the web. (~$12/yr)</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">02</div>
+      <div>
+        <div class="step-t">Create your Google Business Profile</div>
+        <div class="step-d">Free listing that puts you in the map pack — the top 3 results for "handyman Port Charlotte." This is #1 for getting calls.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">03</div>
+      <div>
+        <div class="step-t">Get your first 10 Google reviews</div>
+        <div class="step-d">Text past customers a direct link. 10 reviews in 60 days = real local pack rankings.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">04</div>
+      <div>
+        <div class="step-t">Join Nextdoor + Yelp</div>
+        <div class="step-d">Charlotte County's demographic lives on Nextdoor. One recommendation = 50 neighbors see your name. Both are free.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">05</div>
+      <div>
+        <div class="step-t">Grow with dedicated service pages</div>
+        <div class="step-d">Screen repair, drywall, pressure washing — each targeting its own search query as the business grows.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 8 — THE VALUE
+═══════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="lbl">The Value</div>
+  <div class="h1" style="font-size:44px">Own your leads.<br><span class="r">Pay no platform.</span></div>
+  <div class="stats body">
+    <div>
+      <div class="stat-n">15%</div>
+      <div class="stat-l">TaskRabbit takes<br>off every job</div>
+    </div>
+    <div>
+      <div class="stat-n">$85</div>
+      <div class="stat-l">Angi charges pros<br>per lead referral</div>
+    </div>
+    <div>
+      <div class="stat-n">$0</div>
+      <div class="stat-l">What Google charges<br>for organic traffic</div>
+    </div>
+  </div>
+  <div class="sub body" style="margin-top:32px">
+    Your website + Google Business Profile = permanent lead generation.<br>
+    <b>No monthly fees. No platform cut. No middleman.</b>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 9 — CTA
+═══════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="cta-box body">
+    <div class="cta-h">Ready to get found?</div>
+    <div class="cta-s">
+      Your site is built. Your domain is waiting.<br>
+      The next job is one Google search away.
+    </div>
+    <div class="cta-c">Let's talk → isthismylife37@gmail.com</div>
+  </div>
+</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const N = slides.length;
+// ms per slide — last slide stays
+const DUR = [6000, 8000, 9000, 11000, 8000, 9000, 10000, 8000, 0];
+
+let cur = 0, raf = null, tmr = null, t0 = null;
+
+// build dots
+const dotsEl = document.getElementById('dots');
+const dotEls = slides.map((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+  return d;
+});
+
+const bar = document.getElementById('bar');
+const ctr = document.getElementById('ctr');
+
+function tick(ts) {
+  const pct = Math.min((ts - t0) / DUR[cur] * 100, 100);
+  bar.style.width = pct + '%';
+  if (pct < 100) raf = requestAnimationFrame(tick);
+}
+
+function startTimer() {
+  cancelAnimationFrame(raf);
+  clearTimeout(tmr);
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  if (!DUR[cur]) { bar.style.width = '100%'; return; }
+  t0 = performance.now();
+  raf = requestAnimationFrame(tick);
+  tmr = setTimeout(() => go(cur + 1), DUR[cur]);
+}
+
+function go(idx) {
+  if (idx >= N || idx < 0) return;
+  cancelAnimationFrame(raf);
+  clearTimeout(tmr);
+
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('exiting');
+  const old = cur;
+  setTimeout(() => slides[old].classList.remove('exiting'), 600);
+
+  dotEls[cur].classList.remove('on');
+  cur = idx;
+  dotEls[cur].classList.add('on');
+  slides[cur].classList.add('active');
+  ctr.textContent = `${String(cur+1).padStart(2,'0')} / ${String(N).padStart(2,'0')}`;
+  startTimer();
+}
+
+// init
+ctr.textContent = `01 / ${String(N).padStart(2,'0')}`;
+startTimer();
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dot')) go(cur + 1);
+});
+</script>
+</body>
+</html>

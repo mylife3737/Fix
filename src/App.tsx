@@ -1,4 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useForm } from '@formspree/react';
+import logo from './assets/logo.png';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Hammer, 
@@ -199,18 +201,18 @@ const HoseIcon = (props: React.SVGProps<SVGSVGElement>) => (
     className={props.className}
     {...props}
   >
-    {/* Coiled Hose inside */}
-    <path d="M10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-    <path d="M10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-    {/* Hose outlet running out */}
-    <path d="M16 10h2" />
-    {/* Nozzle gun */}
-    <rect x="18" y="8" width="1" height="4" fill="currentColor" stroke="none" />
-    <path d="M18 9l3-2v6l-3-2" />
-    {/* Droplets / spray */}
-    <line x1="21" y1="8" x2="23" y2="7.5" strokeWidth="1.5" />
-    <line x1="22" y1="10" x2="24" y2="10" strokeWidth="1.5" />
-    <line x1="21" y1="12" x2="23" y2="12.5" strokeWidth="1.5" />
+    {/* Gun barrel (horizontal body) */}
+    <rect x="2" y="8" width="13" height="4" rx="1" />
+    {/* Handle angled down from rear of gun */}
+    <path d="M5 12 L3 19" strokeWidth="2.5" strokeLinecap="round" />
+    {/* Trigger */}
+    <path d="M9 12 L8 15.5" strokeWidth="1.5" strokeLinecap="round" />
+    {/* Nozzle tip extension */}
+    <rect x="15" y="9" width="2" height="2" rx="0.5" />
+    {/* Spray fan */}
+    <line x1="17" y1="9.5"  x2="21" y2="6"    strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="17" y1="10"   x2="22" y2="10"   strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="17" y1="10.5" x2="21" y2="14"   strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
@@ -310,7 +312,7 @@ const SERVICES_DATA: ServiceItem[] = [
 
 const DEFAULT_TESTIMONIALS = [
   {
-    name: 'Mike Ross',
+    name: 'Carlos Medina',
     role: 'Homeowner',
     content: 'Ruben fixed my kitchen cabinet hinges and re-aligned a sticking closet door in under an hour. Outstanding service, super honest, and thorough.',
     location: 'Deep Creek',
@@ -320,7 +322,7 @@ const DEFAULT_TESTIMONIALS = [
     jobTitle: 'Kitchen Cabinet Hinge Fix'
   },
   {
-    name: 'Robert Harrison',
+    name: 'handygal_sw_fl',
     role: 'Property Owner',
     content: 'Absolute professional. Showed up exactly on time, did exactly what I asked, and left zero mess behind. My go-to forever.',
     location: 'Punta Gorda',
@@ -330,7 +332,7 @@ const DEFAULT_TESTIMONIALS = [
     jobTitle: 'Drywall & door repair'
   },
   {
-    name: 'Sarah T.',
+    name: 'Brigitte Fontenot',
     role: 'Homeowner',
     content: "As an incredibly particular homeowner myself, I appreciate Ruben's careful attention to detail. He explained the fix and completed it beautifully.",
     location: 'South Gulf Cove',
@@ -340,7 +342,7 @@ const DEFAULT_TESTIMONIALS = [
     jobTitle: 'Gutter & Exterior maintenance'
   },
   {
-    name: 'Amanda Vance',
+    name: 'Priya Nair',
     role: 'Homeowner',
     content: 'Ruben repainted our hallway and touched up the walls perfectly. He is punctual, friendly, and very meticulous about details.',
     location: 'Port Charlotte',
@@ -350,7 +352,7 @@ const DEFAULT_TESTIMONIALS = [
     jobTitle: 'Hallway Painting'
   },
   {
-    name: 'John D.',
+    name: 'Darnell Washington',
     role: 'Local Business Owner',
     content: 'Outstanding pressure washing of our commercial entryway. Ruben did an amazing job, removing years of grit in no time. Highly recommend!',
     location: 'Charlotte Harbor',
@@ -364,6 +366,8 @@ const DEFAULT_TESTIMONIALS = [
 export default function FixitFirst() {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [globalNotification, setGlobalNotification] = useState<string | null>(null);
+
+  const [formspreeState, handleFormspreeSubmit] = useForm('xgogewor');
   
   const [uploadedFiles, setUploadedFiles] = useState<{ name: string; size: string; type: string }[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -377,6 +381,23 @@ export default function FixitFirst() {
   const [estimateDate, setEstimateDate] = useState('');
   const [urgency, setUrgency] = useState('standard');
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!formspreeState.succeeded) return;
+    setIsSubmitted(true);
+    setCustomerName('');
+    setCustomerPhone('');
+    setCustomerEmail('');
+    setSubdivision('');
+    setCustomMessage('');
+    setEstimateDate('');
+    setUrgency('standard');
+    setSelectedServices([]);
+    setUploadedFiles([]);
+    setTimeout(() => {
+      document.getElementById('estimate-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, [formspreeState.succeeded]);
 
   const [userReviews, setUserReviews] = useState<any[]>(() => {
     const stored = localStorage.getItem('fixitfirst_user_reviews');
@@ -592,54 +613,21 @@ export default function FixitFirst() {
     requests.push(newRequest);
     localStorage.setItem('fixitfirst_requests', JSON.stringify(requests));
 
-    setIsSubmitted(true);
-    setTimeout(() => {
-      const element = document.getElementById('estimate-form');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
-
-    // Reset fields immediately, keep success screen active
-    setCustomerName('');
-    setCustomerPhone('');
-    setCustomerEmail('');
-    setSubdivision('');
-    setCustomMessage('');
-    setEstimateDate('');
-    setUrgency('standard');
-    setSelectedServices([]);
-    setUploadedFiles([]);
+    handleFormspreeSubmit(e);
   };
 
   const filteredServices = SERVICES_DATA;
 
   return (
     <div className="min-h-screen bg-black text-white font-mono selection:bg-red-600 selection:text-white bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px]">
-      <div className="bg-red-600 text-white py-1.5 px-3 sm:px-6 text-[9px] xs:text-[10px] sm:text-xs font-bold tracking-widest uppercase flex items-center justify-between border-b border-red-700 overflow-hidden select-none">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="w-2 h-2 rounded-full bg-white animate-ping shrink-0" />
-          <span className="whitespace-nowrap font-black truncate">READY FOR DISPATCH</span>
-        </div>
-        <div className="flex items-center gap-1 opacity-95 text-[9px] xs:text-[10px] sm:text-[11px] font-black tracking-wider truncate ml-2 shrink-0">
-          <span>CHARLOTTE COUNTY, FL</span>
-        </div>
-      </div>
-
-      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-zinc-900 px-3 sm:px-6 py-3">
+      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-zinc-900 px-3 sm:px-6 py-3 relative">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
-          <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 border-2 border-red-600 flex items-center justify-center bg-zinc-900 text-red-600 font-black text-base sm:text-lg italic hover:rotate-6 transition-transform shrink-0">
-              FF
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-sm xs:text-base sm:text-xl font-black uppercase tracking-tight text-white leading-none truncate">
-                FIX IT <span className="text-red-600">FIRST</span>
-              </h1>
-              <span className="text-[8px] sm:text-[9px] uppercase tracking-widest text-zinc-500 font-bold block mt-1 truncate">
-                BY RUBEN
-              </span>
-            </div>
+          <div className="flex flex-col justify-center leading-none min-w-0">
+            <h1 className="font-black uppercase tracking-[0.15em] leading-tight">
+              <span className="block text-[10px] sm:text-xs text-white">Fix-It</span>
+              <span className="block text-sm sm:text-base text-red-500">First</span>
+              <span className="block text-[9px] sm:text-[10px] text-zinc-400 tracking-widest font-bold">by Ruben</span>
+            </h1>
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-6 shrink-0">
@@ -650,16 +638,17 @@ export default function FixitFirst() {
             </nav>
             <div className="h-4 w-[1px] bg-zinc-800 hidden lg:block" />
             <a 
-              href="tel:5553943494" 
+              href="tel:9416619500" 
               className="text-[10px] xs:text-xs sm:text-sm md:text-base font-black text-red-500 hover:text-white transition-colors tracking-wider flex items-center gap-1 shrink-0"
             >
-              <Phone className="w-3 h-3 xs:w-3.5 xs:h-3.5 shrink-0" /> (555) 394-3494
+              <Phone className="w-3 h-3 xs:w-3.5 xs:h-3.5 shrink-0" /> (941) 661-9500
             </a>
             <a href="#estimate-form" className="hidden sm:block px-4 py-2 border border-red-600 text-red-500 hover:bg-red-600 hover:text-white transition-all rounded-none text-xs uppercase font-bold tracking-wider">
               GET_ESTIMATE
             </a>
           </div>
         </div>
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-red-600 animate-pulse" />
       </header>
 
       {/* Hero Block */}
@@ -670,14 +659,14 @@ export default function FixitFirst() {
         </div>
 
         <div className="max-w-5xl mx-auto w-full relative z-10 text-center">
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="inline-block border-2 border-red-600 bg-red-600/10 text-red-500 px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-black tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-8 sm:mb-10 max-w-full text-center"
-          >
-            RESIDENTIAL ASSISTANCE • NO MIDDLEMEN
-          </motion.div>
+          <div className="flex items-center justify-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-red-500">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+            </span>
+            DISPATCH READY
+          </div>
+
 
           <motion.div
             initial={{ y: 40, opacity: 0 }}
@@ -687,17 +676,11 @@ export default function FixitFirst() {
             <div className="w-full max-w-sm sm:max-w-2xl border-4 border-red-600 p-6 sm:p-12 bg-zinc-950/90 backdrop-blur-sm mb-10 sm:mb-12 shadow-[15px_15px_0_rgba(220,38,38,0.15)] sm:shadow-[30px_30px_0_rgba(220,38,38,0.15)] relative mx-auto">
               <div className="absolute -top-3 -left-3 w-6 h-6 border-t-4 border-l-4 border-white" />
               <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-4 border-r-4 border-white" />
-              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black leading-none tracking-tighter uppercase text-white break-words">
-                FIX IT <span className="text-red-600">FIRST.</span>
-              </h1>
-              <span className="block text-base sm:text-lg md:text-2xl text-zinc-500 tracking-[0.2em] font-black mt-3 sm:mt-4">BY RUBEN</span>
+              <img src={logo} alt="Fix It First by Ruben" className="w-full max-w-md mx-auto" />
             </div>
 
-            <p className="text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] text-red-500 max-w-3xl mx-auto mb-6 px-2">
-              Neighborhood Handyman. Specializing in odd jobs, home maintenance, and small general repairs.
-            </p>
 
-            <p className="text-base sm:text-xl md:text-2xl text-zinc-400 mb-12 sm:mb-16 max-w-2xl mx-auto leading-relaxed border-l-4 border-red-600 pl-4 sm:pl-8 text-left italic font-serif">
+            <p className="text-base sm:text-xl md:text-2xl text-zinc-400 mb-12 sm:mb-16 max-w-2xl mx-auto leading-relaxed border-l-4 border-red-600 pl-4 sm:pl-8 text-left italic font-mono">
               "I gladly tackle the low-margin, small chores that licensed contractors reject, giving minor fixes careful, thorough attention. No overpromising, no overcharging."
             </p>
 
@@ -727,13 +710,13 @@ export default function FixitFirst() {
                 href="#estimate-form" 
                 className="w-full sm:w-auto px-6 sm:px-12 py-4 sm:py-5 bg-red-600 text-white font-black uppercase tracking-widest text-base sm:text-lg hover:bg-white hover:text-zinc-950 transition-all shadow-[8px_8px_0_rgba(255,255,255,0.05)] active:translate-y-1 active:shadow-none"
               >
-                GET_AN_ESTIMATE
+                Get a Free Estimate
               </a>
               <a 
                 href="#services" 
                 className="w-full sm:w-auto px-6 sm:px-12 py-4 sm:py-5 border-2 border-zinc-800 hover:border-red-600 text-zinc-400 hover:text-white transition-all text-base sm:text-lg font-black uppercase tracking-widest"
               >
-                THE_SERVICES_GRID
+                View Our Services
               </a>
             </div>
           </motion.div>
@@ -746,7 +729,7 @@ export default function FixitFirst() {
           <div className="border-l-4 border-red-600 pl-6 mb-12">
             <span className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-red-500 block mb-3">// MODULE: SERVICE_GRID_V1</span>
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight">
-              HANDYMAN SERVICES & SMALL HOME REPAIRS
+              HANDYMAN SERVICES
             </h2>
             <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
               Below are standard helper repairs. Click tasks to request quote.
@@ -779,18 +762,18 @@ export default function FixitFirst() {
 
           {/* Services Grid based on activeCategory */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES_DATA.filter(srv => srv.category === activeCategory).map((srv, idx) => {
+            {SERVICES_DATA.map((srv, idx) => {
               const isSelected = selectedServices.includes(srv.id);
               return (
-                <motion.div 
+                <motion.div
                   key={srv.id}
                   whileHover={{ y: -8, transition: { duration: 0.2 } }}
                   onClick={() => toggleService(srv.id)}
                   className={`p-8 flex flex-col items-center text-center gap-6 border-l-8 relative overflow-hidden transition-all cursor-pointer ${
-                    isSelected 
-                      ? 'bg-zinc-900/80 border-red-600 ring-1 ring-red-600/30' 
+                    isSelected
+                      ? 'bg-zinc-900/80 border-red-600 ring-1 ring-red-600/30'
                       : 'bg-zinc-900/40 border-zinc-800 hover:border-zinc-700'
-                  }`}
+                  } ${srv.category !== activeCategory ? 'hidden' : ''}`}
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/[0.02] -mr-16 -mt-16 rounded-full" />
                   
@@ -928,7 +911,7 @@ export default function FixitFirst() {
                   </div>
                   <div className="space-y-1">
                     <h5 className="text-sm font-mono text-white font-black uppercase tracking-widest text-red-500">
-                      UNNAMED
+                      RUBEN
                     </h5>
                   </div>
                 </div>
@@ -941,7 +924,7 @@ export default function FixitFirst() {
                 </h3>
                 
                 <p className="text-zinc-400 text-sm leading-relaxed font-sans font-medium">
-                  I am dedicated to helping neighbors directly with simple maintenance, odd jobs, and small general repairs for homeowners who want job reliability, safety, and honest, affordable pricing.
+                  I am dedicated to helping neighbors directly with simple maintenance, odd jobs, and small general repairs for homeowners who want job reliability, safety, and honest, affordable pricing. Ruben carries general liability coverage for all work performed in Charlotte County.
                 </p>
 
                 <div className="space-y-6 pt-4 border-t border-zinc-900">
@@ -1224,7 +1207,7 @@ export default function FixitFirst() {
                 key={idx}
                 className="bg-zinc-950 border border-zinc-800 p-8 flex flex-col justify-between hover:border-zinc-700 transition-colors relative group"
               >
-                <div className="absolute top-4 right-4 text-[40px] text-zinc-800 font-serif leading-none group-hover:text-red-600/10 transition-colors">
+                <div className="absolute top-4 right-4 text-[40px] text-zinc-800 font-mono leading-none group-hover:text-red-600/10 transition-colors">
                   ”
                 </div>
 
@@ -1233,7 +1216,7 @@ export default function FixitFirst() {
                     {[...Array(t.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current animate-none" />)}
                   </div>
                   
-                  <p className="text-zinc-300 text-sm leading-relaxed italic font-serif">
+                  <p className="text-zinc-300 text-sm leading-relaxed italic font-mono">
                     "{t.content}"
                   </p>
 
@@ -1278,25 +1261,25 @@ export default function FixitFirst() {
             {/* Left Column: Direct Call details */}
             <div className="lg:col-span-5 space-y-10 text-left">
               <div className="border-l-4 border-red-600 pl-6">
-                <span className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-red-500 block mb-3">// SYSTEM: DISPATCH_CONSOLE_V2</span>
+                <span className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-red-500 block mb-3">// CONTACT</span>
                 <h2 className="text-2xl xs:text-3xl sm:text-4xl font-black uppercase tracking-tight text-white break-words">
-                  INITIALIZE_ESTIMATE
+                  Get a Free Estimate
                 </h2>
                 <p className="text-zinc-500 mt-3 text-xs leading-relaxed">
-                  Call directly, transmit a text, or complete the estimate request form below to send details straight to Ruben.
+                  Call, text, or complete the estimate form below to reach Ruben directly.
                 </p>
               </div>
 
               <div className="space-y-6">
                 <div className="p-8 border-2 border-red-600 bg-red-600/5 relative">
                   <h4 className="text-md font-bold uppercase text-white mb-4 flex items-center gap-2">
-                    <Phone className="w-5 h-5 text-red-500" /> CALL_OR_TEXT_RUBEN
+                    <Phone className="w-5 h-5 text-red-500" /> Call or Text Ruben
                   </h4>
                   <a 
-                    href="tel:5553943494" 
+                    href="tel:9416619500" 
                     className="text-2xl md:text-3xl font-black text-red-500 hover:text-white transition-colors tracking-widest block"
                   >
-                    (555) 394-3494
+                    (941) 661-9500
                   </a>
                   <p className="text-zinc-500 text-xs mt-3 leading-relaxed">
                     Direct dispatcher dial. Typical phone response is by the end of the day.
@@ -1305,11 +1288,11 @@ export default function FixitFirst() {
 
                 <div className="p-6 border border-zinc-800 space-y-4 text-xs">
                   <div className="flex items-center justify-between text-zinc-400">
-                    <span>DISPATCH_HOURS:</span>
-                    <span className="font-bold text-white">MON-SAT 07:00 - 18:00</span>
+                    <span>Hours:</span>
+                    <span className="font-bold text-white">Mon–Sat 8:00 AM – 6:00 PM</span>
                   </div>
                   <div className="flex items-center justify-between text-zinc-400">
-                    <span>DISPATCH_LOCATION:</span>
+                    <span>Service Area:</span>
                     <span className="font-bold text-white flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-red-500" /> CHARLOTTE COUNTY, FL
                     </span>
@@ -1322,7 +1305,7 @@ export default function FixitFirst() {
             <div id="estimate-form" className="lg:col-span-7 scroll-mt-24">
               <div className="border-4 border-zinc-800 p-8 bg-black/60 backdrop-blur-sm relative">
                 <div className="absolute top-0 right-0 bg-zinc-800 text-zinc-400 px-4 py-1 text-[10px] font-bold tracking-widest">
-                  COMPILE_TRANSMISSION
+                  Request a Free Estimate
                 </div>
 
                 {isSubmitted ? (
@@ -1335,20 +1318,17 @@ export default function FixitFirst() {
                       <CheckCircle2 className="w-10 h-10 animate-bounce" />
                     </div>
                     <h4 className="text-xl sm:text-2xl font-black uppercase text-white mb-4 tracking-wider leading-tight">
-                      TRANSMISSION SUCCESSFUL!
+                      Request Sent — Ruben Will Call You Today
                     </h4>
                     <p className="text-zinc-400 text-xs max-w-sm leading-relaxed mb-6 font-mono uppercase tracking-wide">
                       Your inquiry has been successfully serialized. Ruben will review your details and contact you by the end of the day.
                     </p>
-                    <div className="text-[10px] text-red-500 bg-red-500/10 px-4 py-2 font-mono uppercase tracking-wider mb-6">
-                      STATUS: RESPONDING_SOON
-                    </div>
                     <button
                       type="button"
                       onClick={() => setIsSubmitted(false)}
                       className="px-6 py-2.5 bg-red-600 hover:bg-white text-white hover:text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all border-none cursor-pointer"
                     >
-                      [SUBMIT ANOTHER REQUEST]
+                      Send Another Request
                     </button>
                   </motion.div>
                 ) : (
@@ -1368,8 +1348,9 @@ export default function FixitFirst() {
                       <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-wider mb-2">
                         Your Full Name*
                       </label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
+                        name="name"
                         placeholder="John Doe"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
@@ -1380,8 +1361,9 @@ export default function FixitFirst() {
                       <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-wider mb-2">
                         Telephone Number*
                       </label>
-                      <input 
-                        type="tel" 
+                      <input
+                        type="tel"
+                        name="phone"
                         placeholder="(555) 000-0000"
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
@@ -1394,8 +1376,9 @@ export default function FixitFirst() {
                     <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-wider mb-2">
                       Email Address (Optional)
                     </label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
+                      name="email"
                       placeholder="john@example.com"
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
@@ -1407,8 +1390,9 @@ export default function FixitFirst() {
                     <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-wider mb-2">
                       Subdivision or Street Name*
                     </label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
+                      name="subdivision"
                       placeholder="e.g., South Gulf Cove, Deep Creek, etc."
                       value={subdivision}
                       onChange={(e) => setSubdivision(e.target.value)}
@@ -1421,8 +1405,9 @@ export default function FixitFirst() {
                       <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-wider mb-2">
                         Target Date
                       </label>
-                      <input 
-                        type="date" 
+                      <input
+                        type="date"
+                        name="preferred_date"
                         value={estimateDate}
                         onChange={(e) => setEstimateDate(e.target.value)}
                         className="w-full bg-zinc-950 border border-zinc-800 focus:border-red-600 p-4 font-mono text-sm text-white focus:outline-hidden transition-colors"
@@ -1432,7 +1417,8 @@ export default function FixitFirst() {
                       <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-wider mb-2">
                         Job Urgency Level
                       </label>
-                      <select 
+                      <select
+                        name="urgency"
                         value={urgency}
                         onChange={(e) => setUrgency(e.target.value)}
                         className="w-full bg-zinc-950 border border-zinc-800 focus:border-red-600 p-4 font-mono text-sm text-white focus:outline-hidden transition-colors appearance-none text-left"
@@ -1448,7 +1434,8 @@ export default function FixitFirst() {
                     <label className="block text-[10px] font-black uppercase text-zinc-500 tracking-wider mb-2">
                       Job Details / Notes
                     </label>
-                    <textarea 
+                    <textarea
+                      name="message"
                       placeholder="Please describe what needs to be fixed, touched up, mowed, trimmed, or cleaned..."
                       value={customMessage}
                       onChange={(e) => setCustomMessage(e.target.value)}
@@ -1563,7 +1550,7 @@ export default function FixitFirst() {
                         onClick={() => setSelectedServices([])}
                         className="text-[10px] uppercase font-bold text-zinc-500 hover:text-red-500 transition-colors mt-3"
                       >
-                        [CLEAR_SELECTED_TASKS]
+                        Clear Selection
                       </button>
                     </div>
                   )}
@@ -1580,13 +1567,20 @@ export default function FixitFirst() {
                     </div>
                   )}
 
+                  <input type="hidden" name="services" value={
+                    SERVICES_DATA.filter(s => selectedServices.includes(s.id)).map(s => s.title)
+                      .concat(selectedServices.includes('custom') ? ['Custom Repair / Other'] : [])
+                      .join(', ') || '(none selected)'
+                  } />
+                  <input type="hidden" name="attachments" value={uploadedFiles.map(f => f.name).join(', ') || '(none)'} />
+
                   <div className="pt-4">
-                    <button 
+                    <button
                       type="submit"
-                      disabled={!customerName || !customerPhone || !subdivision}
+                      disabled={formspreeState.submitting || !customerName || !customerPhone || !subdivision}
                       className="w-full py-5 bg-red-600 hover:bg-white text-white hover:text-zinc-950 font-black uppercase tracking-widest text-sm transition-all shadow-[10px_10px_0_rgba(255,255,255,0.05)] disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed disabled:shadow-none"
                     >
-                      SUBMIT_QUOTE_REQUEST_V2
+                      {formspreeState.submitting ? 'SENDING...' : 'Send My Request'}
                     </button>
                   </div>
                 </form>
@@ -1602,10 +1596,12 @@ export default function FixitFirst() {
       {/* Footer Block */}
       <footer className="py-20 px-6 bg-zinc-950 border-t border-zinc-900 text-zinc-500 text-xs">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <span className="text-white font-black">FIX IT FIRST BY RUBEN © 2026</span>
+          <div className="flex items-center gap-3 flex-wrap justify-center md:justify-start">
+            <span className="text-white font-black">FIX-IT <span className="text-red-500">FIRST</span> BY RUBEN © 2026</span>
             <span>•</span>
             <span>CHARLOTTE COUNTY, FL</span>
+            <span>•</span>
+            <a href="tel:+19416619500" className="hover:text-red-500 transition-colors">(941) 661-9500</a>
           </div>
           <div className="flex gap-6">
             <a href="#" className="hover:text-red-500 flex items-center gap-1"><Instagram className="w-4 h-4" /> [INSTAGRAM]</a>
@@ -1704,7 +1700,7 @@ export default function FixitFirst() {
 
                   <div className="space-y-2">
                     <span className="text-[9px] uppercase text-zinc-500 font-bold tracking-widest block">// CLIENT_FEEDBACK:</span>
-                    <p className="text-zinc-300 italic font-serif leading-relaxed text-sm">
+                    <p className="text-zinc-300 italic font-mono leading-relaxed text-sm">
                       "{activeLightboxReview?.content}"
                     </p>
                   </div>
@@ -1741,9 +1737,6 @@ export default function FixitFirst() {
               exit={{ opacity: 0, y: 50, x: "-50%" }}
               className="fixed bottom-10 left-1/2 z-50 bg-black border-2 border-red-600 text-white font-mono p-5 shadow-[0_15px_50px_rgba(220,38,38,0.3)] max-w-md w-[90%] flex flex-col gap-3 rounded-none select-none"
             >
-              <div className="absolute top-0 left-0 bg-red-600 text-white px-2.5 py-0.5 text-[8px] font-black uppercase tracking-widest">
-                SYSTEM_NOTIFICATION
-              </div>
               <div className="flex items-start gap-3 mt-2">
                 <div className="p-1 bg-red-600/10 border border-red-600/30 text-red-500 shrink-0 mt-0.5">
                   {isError ? (
@@ -1754,7 +1747,7 @@ export default function FixitFirst() {
                 </div>
                 <div className="space-y-1 min-w-0">
                   <div className="text-xs font-black uppercase tracking-wider text-red-500">
-                    {isError ? 'TRANSMISSION FAILED' : 'TRANSMISSION COMPLETE'}
+                    {isError ? 'Something went wrong' : 'Success'}
                   </div>
                   <p className="text-[11px] text-zinc-300 uppercase leading-relaxed font-bold">
                     {globalNotification}
@@ -1762,11 +1755,11 @@ export default function FixitFirst() {
                 </div>
               </div>
               <div className="flex justify-end pt-2 border-t border-zinc-900 mt-1">
-                <button 
+                <button
                   onClick={() => setGlobalNotification(null)}
                   className="text-[10px] uppercase font-bold text-zinc-500 hover:text-white transition-colors tracking-widest"
                 >
-                  [DISMISS_NOTIF]
+                  Dismiss
                 </button>
               </div>
             </motion.div>
