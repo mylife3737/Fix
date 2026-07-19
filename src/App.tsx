@@ -325,7 +325,7 @@ const DEFAULT_TESTIMONIALS = [
   {
     name: 'handygal_sw_fl',
     role: 'Property Owner',
-    content: "Ruben pressure-washed the driveway and pool deck — you can see the before/after in the strip he left running down the middle. Fast, thorough, and no overspray on the paint. Booking him again for the fence.",
+    content: "Ruben pressure-washed the driveway and pool deck — before and after speak for themselves. Fast, thorough, and no overspray on the paint. Booking him again for the fence.",
     location: 'Punta Gorda',
     date: '1 month ago',
     rating: 5,
