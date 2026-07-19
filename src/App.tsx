@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useForm } from '@formspree/react';
 import logo from './assets/logo.png';
+import pressurewash from './assets/pressurewash.jpeg';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Hammer, 
@@ -324,12 +325,12 @@ const DEFAULT_TESTIMONIALS = [
   {
     name: 'handygal_sw_fl',
     role: 'Property Owner',
-    content: 'Absolute professional. Showed up exactly on time, did exactly what I asked, and left zero mess behind. My go-to forever.',
+    content: "Ruben pressure-washed the driveway and pool deck — you can see the before/after in the strip he left running down the middle. Fast, thorough, and no overspray on the paint. Booking him again for the fence.",
     location: 'Punta Gorda',
     date: '1 month ago',
     rating: 5,
-    image: null,
-    jobTitle: 'Drywall & door repair'
+    image: pressurewash,
+    jobTitle: 'Driveway & Pool Deck Pressure Wash'
   },
   {
     name: 'Brigitte Fontenot',
