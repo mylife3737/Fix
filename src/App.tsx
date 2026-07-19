@@ -632,6 +632,10 @@ export default function FixitFirst() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-6 shrink-0">
+            <span className="hidden md:flex items-center gap-1 text-[10px] xs:text-xs uppercase font-bold tracking-wider text-zinc-400 shrink-0">
+              <MapPin className="w-3 h-3 text-red-500 shrink-0" /> Charlotte County, FL
+            </span>
+            <div className="h-4 w-[1px] bg-zinc-800 hidden md:block" />
             <nav className="hidden lg:flex items-center gap-6 text-xs uppercase font-bold tracking-wider">
               <a href="#services" className="text-zinc-400 hover:text-red-500 transition-colors">THE_GRID</a>
               <a href="#meet-ruben" className="text-zinc-400 hover:text-red-500 transition-colors">ABOUT</a>
@@ -1221,7 +1225,7 @@ export default function FixitFirst() {
                     "{t.content}"
                   </p>
 
-                  {t.image && (t.image.startsWith('data:image/') || t.image.startsWith('http')) && (
+                  {t.image && (t.image.startsWith('data:image/') || t.image.startsWith('http') || t.image.startsWith('/')) && (
                     <div 
                       onClick={() => {
                         setActiveLightboxImage(t.image);
